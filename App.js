@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView, StyleSheet, Button, Alert, Platform, Text, TouchableHighlight } from 'react-native';
+import { View, ScrollView, StyleSheet, Button, Alert, Platform, Text, TouchableWithoutFeedback } from 'react-native';
 import { FileSystem, Constants, Notifications, Permissions } from 'expo';
 import Toast, {DURATION} from 'react-native-easy-toast';
 
@@ -71,15 +71,15 @@ export default class App extends Component {
         // _this.refs.toast.show(<View><Text>hello world!</Text></View>);
 
         const toastDOM = 
-          <TouchableHighlight 
-            onPress={this.openFile.bind(notification.data.fileUri)}
-            style={{padding: '5', backgroundColor: 'green'}}>
+          <TouchableWithoutFeedback 
+            onPress={() => {this.openFile(notification.data.fileUri)}}
+            style={{padding: '10', backgroundColor: 'green'}}>
             <Text style={styles.toastText}>{notification.data.body}</Text>
-          </TouchableHighlight>;
+          </TouchableWithoutFeedback>;
 
-        _this.toast.show(toastDOM, DURATION.FOREVER, () => {
-          Alert.alert('closing  ');
-        });
+        _this.toast.show(toastDOM, DURATION.FOREVER);
+      } else if (notification.origin === 'selected') {
+        this.openFile(notification.data.fileUri);
       }
         // Expo.Notifications.setBadgeNumberAsync(number);
         // Notifications.setBadgeNumberAsync(10);
@@ -96,22 +96,28 @@ export default class App extends Component {
     // Toast.show('Hello World');
   }
   openFile = (fileUri) => {
-    Alert.alert('hwo');
-    // this.toast.close(40);
-    // FileSystem.readAsStringAsync(fileUri)
-    // .then((fileContents) => {
-    //   // Get file contents in binary and convert to text
-    //   let fileTextContent = parseInt(fileContents, 2);
-    //   this.setState({filePreviewText: fileContents});
-    // });
+    this.toast.close(40);
+    console.log('Opening file ' + fileUri);
+    FileSystem.readAsStringAsync(fileUri)
+    .then((fileContents) => {
+      // Get file contents in binary and convert to text
+      // let fileTextContent = parseInt(fileContents, 2);
+      this.setState({filePreviewText: fileContents});
+    });
   }
   render() {
     return (
       <View style={styles.container}>
-        <Button
-          title={"Download text file"}
-          onPress={this._handleButtonPress}
-        />
+        <View style={styles.buttonsContainer}>
+          <Button style={styles.button}
+            title={"Download text file"}
+            onPress={this._handleButtonPress}
+          />
+          <Button style={styles.button}
+            title={"Clear File Preview"}
+            onPress={() => {this.setState({filePreviewText: ""})}}
+          />
+        </View>
         <ScrollView style={styles.filePreview}>
           <Text>{this.state.filePreviewText}</Text>
         </ScrollView>
@@ -136,6 +142,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
     backgroundColor: '#ecf0f1',
+  },
+  buttonsContainer: {
+    flexDirection: 'row',
+  },
+  button: {
+    flex: 1
   },
   filePreview: {
     flex: 1,

@@ -10,6 +10,6 @@
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "prop-types": "^15.5.7",
-    "react-native-easy-toast": "1.1.0"
+    "react-native-easy-toast": "git+https://github.com/SiavasFiroozbakht/react-native-easy-toast.git#6eed52f4d64c796cb49bdafcd7b3986cf5975d62"
   }
 }
